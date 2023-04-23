@@ -128,6 +128,22 @@ fun MainScreen(IP : String?) {
                       Text(text = "Get Data")
                   }
               }
+
+              Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+                  Button(
+                      onClick = {
+                          val data = postRequest(
+                              id = id.value.text,
+                              profileState = profile,
+                              ip_adres = IP
+                          )
+
+                          Log.d("Main Activity", profile.toString())
+                      }
+                  ) {
+                      Text(text = "send Data")
+                  }
+              }
               
               Spacer(modifier = Modifier.height(15.dp))
               
@@ -143,7 +159,8 @@ fun sendRequest(
     ip_adres : String?
 ) {
 
-    val ip = if(ip_adres.isNullOrEmpty()) "http://192.168.0.141:3000" else ip_adres
+    val ip = if(ip_adres.isNullOrEmpty()) "http://192.168.0.141:3000" else "http://"+ip_adres+":3000"
+
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
         .addConverterFactory(GsonConverterFactory.create())
@@ -155,6 +172,44 @@ fun sendRequest(
 
     call!!.enqueue(object: Callback<UserModel?> {
         override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
+            if(response.isSuccessful) {
+                Log.d("Main", "success!" + response.body().toString())
+                profileState.value = response.body()!!.profile
+            }
+        }
+
+        override fun onFailure(call: Call<UserModel?>, t: Throwable) {
+            Log.e("Main", "Failed mate " + t.message.toString())
+        }
+    })
+}
+
+fun postRequest(
+    id: String,
+    profileState: MutableState<ProfileModel>,
+    ip_adres : String?
+) {
+
+    val ip = if(ip_adres.isNullOrEmpty()) "http://192.168.0.141:3000" else "http://"+ip_adres+":3000"
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ip)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val api = retrofit.create(UserApi::class.java)
+
+    val profMod = ProfileModel("69","bob","test@test.test")
+    val U = UserModel(profMod)
+    Log.d("Main","blob:" + U.toString())
+
+    val call: Call<UserModel?>? = api.createUser(U)
+
+
+    call!!.enqueue(object: Callback<UserModel?> {
+
+        override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
+            Log.d("Main","blob in dit blokj")
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
                 profileState.value = response.body()!!.profile
