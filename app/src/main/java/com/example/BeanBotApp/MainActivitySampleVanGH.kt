@@ -1,6 +1,6 @@
 package com.example.BeanBotApp
 
-import android.content.Intent.getIntent
+
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -14,8 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,8 +24,6 @@ import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-import android.content.Intent
-import androidx.compose.ui.platform.LocalContext
 
 
 
@@ -69,7 +66,7 @@ fun MainScreen(IP : String?) {
                backgroundColor = Purple700,
                title = {
                    Text(
-                       text = "Simple API Request",
+                       text = "Bean Bot Controlepaneel",
                        modifier = Modifier.fillMaxWidth(),
                        textAlign = TextAlign.Center,
                        color = Color.White
@@ -95,13 +92,7 @@ fun MainScreen(IP : String?) {
                   ))
               }
 
-              Text(
-                  text="API Sample",
-                  style= TextStyle(
-                      fontSize = 40.sp,
-                      fontFamily = FontFamily.Cursive
-                  )
-              )
+
 
               Spacer(modifier = Modifier.height(15.dp))
 
@@ -113,41 +104,46 @@ fun MainScreen(IP : String?) {
 
               Spacer(modifier = Modifier.height(15.dp))
 
-              Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-                  Button(
-                      onClick = {
-                          val data = sendRequest(
-                              id = id.value.text,
-                              profileState = profile,
-                              ip_adres = IP
-                          )
 
-                          Log.d("Main Activity", profile.toString())
+              Row() {
+                  Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+                      Button(
+                          onClick = {
+                              val data = sendRequest(
+                                  id = id.value.text,
+                                  profileState = profile,
+                                  ip_adres = IP
+                              )
+
+                              Log.d("Main Activity", profile.toString())
+                          }
+                      ) {
+                          Text(text = "Get Data")
                       }
-                  ) {
-                      Text(text = "Get Data")
+                  }
+
+                  Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+                      Button(
+                          onClick = {
+                              val data = postRequest(
+                                  id = id.value.text,
+                                  profileState = profile,
+                                  ip_adres = IP
+                              )
+
+                              Log.d("Main Activity", profile.toString())
+                          }
+                      ) {
+                          Text(text = "send Data")
+                      }
                   }
               }
 
-              Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-                  Button(
-                      onClick = {
-                          val data = postRequest(
-                              id = id.value.text,
-                              profileState = profile,
-                              ip_adres = IP
-                          )
-
-                          Log.d("Main Activity", profile.toString())
-                      }
-                  ) {
-                      Text(text = "send Data")
-                  }
-              }
               
               Spacer(modifier = Modifier.height(15.dp))
-              
-              Text(text = profile.component1().toString(), fontSize = 40.sp)
+
+              Text(text = "Output: ",fontSize = 20.sp)
+              Text(text = profile.component1().toString(), fontSize = 20.sp)
           }
        }
    )
@@ -168,7 +164,7 @@ fun sendRequest(
 
     val api = retrofit.create(UserApi::class.java)
 
-    val call: Call<UserModel?>? = api.getUserById(id);
+    val call: Call<UserModel?>? = api.getUserById(id)
 
     call!!.enqueue(object: Callback<UserModel?> {
         override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
@@ -209,7 +205,7 @@ fun postRequest(
     call!!.enqueue(object: Callback<UserModel?> {
 
         override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
-            Log.d("Main","blob in dit blokj")
+
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
                 profileState.value = response.body()!!.profile
