@@ -1,4 +1,4 @@
-package com.example.apiexample
+package com.example.BeanBotApp
 
 import org.junit.Test
 

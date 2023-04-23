@@ -1,12 +1,7 @@
-package com.example.apiexample.api
+package com.example.BeanBotApp.api
 
-import com.example.apiexample.ProfileModel
-import com.example.apiexample.UserModel
-import okhttp3.ResponseBody
+import com.example.BeanBotApp.UserModel
 import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path

@@ -1,4 +1,4 @@
-package com.example.apiexample.ui.theme
+package com.example.BeanBotApp.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,9 +1,7 @@
-package com.example.apiexample
+package com.example.BeanBotApp
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,9 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.apiexample.api.UserApi
-import com.example.apiexample.ui.theme.ApiExampleTheme
-import com.example.apiexample.ui.theme.Purple700
+import com.example.BeanBotApp.api.UserApi
+import com.example.BeanBotApp.ui.theme.ApiExampleTheme
+import com.example.BeanBotApp.ui.theme.Purple700
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -136,7 +134,7 @@ fun sendRequest(
     profileState: MutableState<ProfileModel>
 ) {
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.109:3000")
+        .baseUrl("http://192.168.0.141:3000")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
