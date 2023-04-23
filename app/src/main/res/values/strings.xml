@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">ApiExample</string>
+    <string name="app_name">BeanBotApp</string>
+    <string name="title_activity_origineelscherm">voorbeeldscherm</string>
 </resources>

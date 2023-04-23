@@ -15,7 +15,7 @@
         android:theme="@style/Theme.ApiExample"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.BeanBotApp.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ApiExample">
@@ -29,6 +29,11 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name="com.example.BeanBotApp.MainActivitySampleVanGH"
+            android:exported="false"
+            android:label="@string/title_activity_origineelscherm"
+            android:theme="@style/Theme.ApiExample" />
     </application>
 
 </manifest>

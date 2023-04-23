@@ -1,157 +1,192 @@
 package com.example.BeanBotApp
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+
+import androidx.compose.material3.TextField
+
+
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.TextFieldValue
+
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import androidx.compose.ui.unit.sp
-import com.example.BeanBotApp.api.UserApi
 import com.example.BeanBotApp.ui.theme.ApiExampleTheme
-import com.example.BeanBotApp.ui.theme.Purple700
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.BeanBotApp.ui.theme.Grey
+import com.example.apiexample.R
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ApiExampleTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = Grey
                 ) {
-                    MainScreen()
+                    BgImage()
+                    Box() {
+                        Column(){
+                            WelkomTekst()
+                            InputField()
+                        }
+
+                    }
                 }
             }
         }
     }
 }
 
-data class ProfileModel(
-    var age: String,
-    var name: String,
-    var email: String,
-)
 
-data class UserModel(
-    var profile: ProfileModel
-)
 
+@Preview(showBackground = true)
 @Composable
-fun MainScreen() {
-   Scaffold(
-       topBar = {
-           TopAppBar(
-               backgroundColor = Purple700,
-               title = {
-                   Text(
-                       text = "Simple API Request",
-                       modifier = Modifier.fillMaxWidth(),
-                       textAlign = TextAlign.Center,
-                       color = Color.White
-                   )
-               }
-           )
-       },
-       content = {
-          Column(
-              modifier = Modifier.fillMaxWidth(),
-              verticalArrangement = Arrangement.Center,
-              horizontalAlignment = Alignment.CenterHorizontally
-          ) {
-              val id = remember {
-                  mutableStateOf(TextFieldValue())
-              }
-
-              val profile = remember {
-                  mutableStateOf(ProfileModel(
-                      age = "",
-                      name = "",
-                      email = ""
-                  ))
-              }
-
-              Text(
-                  text="API Sample",
-                  style= TextStyle(
-                      fontSize = 40.sp,
-                      fontFamily = FontFamily.Cursive
-                  )
-              )
-
-              Spacer(modifier = Modifier.height(15.dp))
-
-              TextField(
-                  label = { Text(text = "User ID")},
-                  value = id.value,
-                  onValueChange = { id.value = it }
-              )
-
-              Spacer(modifier = Modifier.height(15.dp))
-
-              Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-                  Button(
-                      onClick = {
-                          val data = sendRequest(
-                              id = id.value.text,
-                              profileState = profile
-                          )
-
-                          Log.d("Main Activity", profile.toString())
-                      }
-                  ) {
-                      Text(text = "Get Data")
-                  }
-              }
-              
-              Spacer(modifier = Modifier.height(15.dp))
-              
-              Text(text = profile.component1().toString(), fontSize = 40.sp)
-          }
-       }
-   )
-}
-
-fun sendRequest(
-    id: String,
-    profileState: MutableState<ProfileModel>
-) {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.141:3000")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(UserApi::class.java)
-
-    val call: Call<UserModel?>? = api.getUserById(id);
-
-    call!!.enqueue(object: Callback<UserModel?> {
-        override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
-            if(response.isSuccessful) {
-                Log.d("Main", "success!" + response.body().toString())
-                profileState.value = response.body()!!.profile
+fun DefaultPreview2() {
+    ApiExampleTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Grey
+        ) {
+            BgImage()
+            Box() {
+                Column(){
+                    WelkomTekst()
+                    InputField()
+                }
+                
             }
         }
 
-        override fun onFailure(call: Call<UserModel?>, t: Throwable) {
-            Log.e("Main", "Failed mate " + t.message.toString())
+    }
+}
+
+@Composable
+fun WelkomTekst(){
+    Box(
+        modifier = Modifier
+
+            .padding(30.dp),
+        contentAlignment = Alignment.TopCenter
+
+    ){
+
+
+        Text(text = "Vul het IP-adres van de Bean Bot in om te verbinden",
+            // kleur hardcoded zodat altijd opvalt op de achtergrond
+            style = MaterialTheme.typography.titleLarge.copy(
+
+                color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Left,
+                lineHeight = 30.sp,
+                
+            )
+        )
+    }
+
+}
+
+@Composable
+fun BgImage(){
+    Box(
+        modifier = with (Modifier){
+            fillMaxSize()
+                .paint(
+                    // Replace with your image id
+                    painterResource(id = R.drawable.renderfoto),
+                    contentScale = ContentScale.FillHeight)
+
+        })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InputField(){
+
+    var defaultText by remember { mutableStateOf("") }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.padding(10.dp)
+    ){
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                shape = RoundedCornerShape(22.dp),
+
+                //Anders raar lijntje onder search bar
+                colors = TextFieldDefaults.textFieldColors(unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    textColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.surface),
+
+
+                leadingIcon = {Icon(painter = painterResource(id = R.drawable.baseline_speaker_phone_24), contentDescription = "searchIcon")},
+
+                value = defaultText,
+                onValueChange = {
+                    defaultText = it
+                },
+                label = { Text("IP Bean Bot:", color = MaterialTheme.colorScheme.primary) },
+                placeholder = {Text("xxx.xxx.xxx",color =MaterialTheme.colorScheme.primary)},
+
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            val context = LocalContext.current
+            Button(
+                onClick = {  val intent = Intent(context, MainActivitySampleVanGH::class.java)
+                    intent.putExtra("IP_BeanBot",defaultText)
+                    context.startActivity(intent)
+                          },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.background,
+                ),
+                modifier = Modifier
+                    .padding(5.dp)
+            ) {
+                Icon( Icons.Filled.ArrowForward, contentDescription = "Submit")
+            }
+
         }
-    })
+    }
 }
