@@ -198,7 +198,6 @@ fun InputField(){
         }
     }
 }
-
 class BestelSchermClass : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,7 +215,7 @@ class BestelSchermClass : ComponentActivity() {
         }
     }
 }
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun BestelScherm() {
     var RodeBonen = "70%"
@@ -242,8 +241,6 @@ fun BestelScherm() {
                 Text(
                     text = "Klik op de gewenste kleur",
                     style = MaterialTheme.typography.titleLarge.copy(
-
-                        color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Left,
@@ -255,58 +252,42 @@ fun BestelScherm() {
         }
         item {
             Row() {
-                Text(text = "Stock",
-                color = Color.White,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.width(80.dp))
-                Text(text = "Kleur",
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-            }
-        }
-        item{
-            Row() {
-                Text(
-                    text = RodeBonen, fontSize = 35.sp,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.width(30.dp))
-                Button(
-                    onClick = { RodeWil++ },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.background),
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Stock", fontSize = 20.sp)
+                    Text(
+                        text = RodeBonen, fontSize = 35.sp
+                    )
+                    Text(
+                        text = ZwarteBonen, fontSize = 35.sp
+                    )
+                    Text(text = WitteBonen, fontSize = 35.sp)
+                }
+                Spacer(modifier = Modifier.width(25.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Kleur",
+                        fontSize = 20.sp
+                    )
+                    Button(
+                        onClick = { RodeWil++ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.background),
                         modifier = Modifier.width(135.dp)
-                )
-                {
-                    Text(text = "Rode Bonen")
-                }
-            }
-        }
-        item {
-            Row() {
-                Text(text = ZwarteBonen, fontSize = 35.sp,
-                    color = Color.White)
-                Spacer(modifier = Modifier.width(30.dp))
-                Button(
-                    onClick = { ZwarteWil++ },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.background
-                    ),
-                    modifier = Modifier.width(135.dp)
-                )
-                {
-                    Text(text = "Zwarte Bonen")
-                }
-            }
-        }
-        item {
-            Box() {
-                Row() {
-                    Text(text = WitteBonen, fontSize = 35.sp,
-                        color = Color.White)
-                    Spacer(modifier = Modifier.width(30.dp))
+                    )
+                    {
+                        Text(text = "Rode Bonen")
+                    }
+                    Button(
+                        onClick = { ZwarteWil++ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
+                        modifier = Modifier.width(135.dp)
+                    )
+                    {
+                        Text(text = "Zwarte Bonen")
+                    }
                     Button(
                         onClick = { WitteWil++ },
                         colors = ButtonDefaults.buttonColors(
@@ -318,6 +299,7 @@ fun BestelScherm() {
                         Text(text = "Witte Bonen")
                     }
                 }
+
             }
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
@@ -326,7 +308,6 @@ fun BestelScherm() {
                 Text(
                     text = "Duid het gewicht aan op de slider",
                     fontSize = 20.sp,
-                    color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -340,18 +321,23 @@ fun BestelScherm() {
                     modifier = Modifier.width(50.dp),
                     text = gewichtBonen.toString(),
                     fontSize = 20.sp,
-                    color = Color.White
                 )
             }
         }
         item {
-            Slider(
-                modifier = Modifier.semantics { contentDescription = "Localized Description"},
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it },
-                valueRange = 150f..300f,
-                steps = 150
-            )
+            Box(
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Slider(
+                    modifier = Modifier.semantics { contentDescription = "Localized Description"},
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    valueRange = 150f..300f,
+                    steps = 150
+                )
+            }
+
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
         item {
