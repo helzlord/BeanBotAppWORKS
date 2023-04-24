@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.gestures.Orientation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -214,7 +216,7 @@ class BestelSchermClass : ComponentActivity() {
         }
     }
 }
-
+@Preview
 @Composable
 fun BestelScherm() {
     var RodeBonen = "70%"
@@ -226,30 +228,41 @@ fun BestelScherm() {
     var sliderPosition by remember { mutableStateOf(150f) }
     var gewichtBonen = sliderPosition.toInt()
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(vertical = 8.dp)
     )
     {
-        item{ Text(text = RodeBonen, fontSize = 35.sp) }
-        item {
-            Button(
-                onClick = { RodeWil++ },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.background
+        item { Spacer(modifier = Modifier.height(15.dp)) }
+        item{
+            Row() {
+                Text(
+                    text = RodeBonen, fontSize = 35.sp,
+                    color = Color.White
                 )
-            )
-            {
-                Text(text = "Rode Bonen")
+                Spacer(modifier = Modifier.width(30.dp))
+                Button(
+                    onClick = { RodeWil++ },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.background),
+                        modifier = Modifier.width(135.dp)
+                )
+                {
+                    Text(text = "Rode Bonen")
+                }
             }
         }
         item {
             Row() {
-                Text(text = ZwarteBonen, fontSize = 35.sp)
+                Text(text = ZwarteBonen, fontSize = 35.sp,
+                    color = Color.White)
                 Spacer(modifier = Modifier.width(30.dp))
                 Button(
                     onClick = { ZwarteWil++ },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.background
-                    )
+                    ),
+                    modifier = Modifier.width(135.dp)
                 )
                 {
                     Text(text = "Zwarte Bonen")
@@ -259,13 +272,15 @@ fun BestelScherm() {
         item {
             Box() {
                 Row() {
-                    Text(text = WitteBonen, fontSize = 35.sp)
+                    Text(text = WitteBonen, fontSize = 35.sp,
+                        color = Color.White)
                     Spacer(modifier = Modifier.width(30.dp))
                     Button(
                         onClick = { WitteWil++ },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = MaterialTheme.colorScheme.background
-                        )
+                        ),
+                        modifier = Modifier.width(135.dp)
                     )
                     {
                         Text(text = "Witte Bonen")
@@ -273,11 +288,13 @@ fun BestelScherm() {
                 }
             }
         }
+        item { Spacer(modifier = Modifier.height(35.dp)) }
         item {
             Box() {
                 Text(
                     text = "Duid het gewenste gewicht aan op de slider",
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    color = Color.White
                 )
             }
         }
@@ -289,7 +306,8 @@ fun BestelScherm() {
                 Text(
                     modifier = Modifier.width(50.dp),
                     text = gewichtBonen.toString(),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = Color.White
                 )
             }
         }
@@ -302,6 +320,7 @@ fun BestelScherm() {
                 steps = 150
             )
         }
+        item { Spacer(modifier = Modifier.height(35.dp)) }
         item {
             Button(
                 onClick = {
@@ -319,6 +338,7 @@ fun BestelScherm() {
                 )
             }
         }
+        item { Spacer(modifier = Modifier.height(35.dp)) }
         item { val context = LocalContext.current
             Button(
                 onClick = {
