@@ -228,7 +228,7 @@ fun BestelSchermtest() {
     var sliderPosition by remember { mutableStateOf(150f) }
     var gewichtBonen = sliderPosition.toInt()
         LazyColumn(
-
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(vertical = 8.dp)
         )
@@ -348,10 +348,10 @@ fun BestelSchermtest() {
             item {
                 Button(
                     onClick = {
-                        if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
+
                             //hier code voor post request met de variabelen: rodewil, zwartwil, witwil, gewicht
                             //dan veranderen van scherm, alles weg en progressbar verschijnt met stop knop
-                        }
+
                     },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.background
