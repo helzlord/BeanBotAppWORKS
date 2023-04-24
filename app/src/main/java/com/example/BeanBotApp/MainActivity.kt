@@ -221,6 +221,7 @@ fun BestelSchermtest() {
     var RodeBonen = "70%"
     var ZwarteBonen = "50%"
     var WitteBonen = "69%"
+    // deze bovenstaande variabelen moeten hun waarden krijgen van get request
     var RodeWil by remember { mutableStateOf(0) }
     var ZwarteWil by remember { mutableStateOf(0) }
     var WitteWil by remember { mutableStateOf(0) }
@@ -348,6 +349,8 @@ fun BestelSchermtest() {
                 Button(
                     onClick = {
                         if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
+                            //hier code voor post request met de variabelen: rodewil, zwartwil, witwil, gewicht
+                            //dan veranderen van scherm, alles weg en progressbar verschijnt met stop knop
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
