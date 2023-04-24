@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.example.apiexample'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.apiexample"
@@ -37,7 +37,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion '1.2.0'
     }
     packagingOptions {
         resources {
@@ -62,4 +62,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+
+    // zelf ingevuld
+    implementation "androidx.compose.material3:material3:1.0.1"
 }
