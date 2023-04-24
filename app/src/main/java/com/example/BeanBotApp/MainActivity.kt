@@ -233,7 +233,39 @@ fun BestelScherm() {
         contentPadding = PaddingValues(vertical = 8.dp)
     )
     {
-        item { Spacer(modifier = Modifier.height(15.dp)) }
+        item {
+            Box(
+                modifier = Modifier
+                    .padding(30.dp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(
+                    text = "Klik op de gewenste kleur",
+                    style = MaterialTheme.typography.titleLarge.copy(
+
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Left,
+                        lineHeight = 30.sp,
+
+                        )
+                )
+            }
+        }
+        item {
+            Row() {
+                Text(text = "Stock",
+                color = Color.White,
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(80.dp))
+                Text(text = "Kleur",
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+        }
         item{
             Row() {
                 Text(
@@ -292,9 +324,10 @@ fun BestelScherm() {
         item {
             Box() {
                 Text(
-                    text = "Duid het gewenste gewicht aan op de slider",
-                    fontSize = 18.sp,
-                    color = Color.White
+                    text = "Duid het gewicht aan op de slider",
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -313,7 +346,7 @@ fun BestelScherm() {
         }
         item {
             Slider(
-                modifier = Modifier.semantics { contentDescription = "Localized Description" },
+                modifier = Modifier.semantics { contentDescription = "Localized Description"},
                 value = sliderPosition,
                 onValueChange = { sliderPosition = it },
                 valueRange = 150f..300f,
