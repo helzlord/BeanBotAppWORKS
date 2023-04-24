@@ -6,8 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 
@@ -33,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -82,9 +88,10 @@ fun DefaultPreview2() {
         ) {
             BgImage()
             Box() {
-                Column(){
+                Column {
                     WelkomTekst()
                     InputField()
+                    BestelScherm()
                 }
                 
             }
@@ -187,6 +194,101 @@ fun InputField(){
                 Icon( Icons.Filled.ArrowForward, contentDescription = "Submit")
             }
 
+        }
+    }
+}
+
+@Composable
+fun BestelScherm() {
+    var RodeBonen = "70%"
+    var ZwarteBonen = "50%"
+    var WitteBonen = "69%"
+    var RodeWil = 0
+    var ZwarteWil = 0
+    var WitteWil = 0
+    var sliderPosition by remember { mutableStateOf(150f) }
+    var gewichtBonen = sliderPosition.toInt()
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+    )
+    {
+        item{Text(text = RodeBonen, fontSize = 35.sp)}
+        item {
+            Button(
+                onClick = { RodeWil++ }
+            )
+            {
+                Text(text = "Rode Bonen")
+            }
+        }
+        item {
+            Row() {
+                Text(text = ZwarteBonen, fontSize = 35.sp)
+                Spacer(modifier = Modifier.width(30.dp))
+                Button(
+                    onClick = { ZwarteWil++ }
+                )
+                {
+                    Text(text = "Zwarte Bonen")
+                }
+            }
+        }
+        item {
+            Box() {
+                Row() {
+                    Text(text = WitteBonen, fontSize = 35.sp)
+                    Spacer(modifier = Modifier.width(30.dp))
+                    Button(
+                        onClick = { WitteWil++ },
+                    )
+                    {
+                        Text(text = "Witte Bonen")
+                    }
+                }
+            }
+        }
+        item {
+            Box() {
+                Text(
+                    text = "Duid het gewenste gewicht aan op de slider",
+                    fontSize = 18.sp
+                )
+            }
+        }
+        item {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(1.dp)
+            ) {
+                Text(
+                    modifier = Modifier.width(50.dp),
+                    text = gewichtBonen.toString(),
+                    fontSize = 20.sp
+                )
+            }
+        }
+        item {
+            Slider(
+                modifier = Modifier.semantics { contentDescription = "Localized Description" },
+                value = sliderPosition,
+                onValueChange = { sliderPosition = it },
+                valueRange = 150f..300f,
+                steps = 150
+            )
+        }
+        item {
+            Button(
+                onClick = {
+                    if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
+                    }
+                }
+            )
+            {
+                Text(
+                    text = "Order",
+                    fontSize = 50.sp
+                )
+            }
         }
     }
 }
