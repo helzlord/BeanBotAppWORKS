@@ -11,8 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
@@ -90,7 +91,6 @@ fun DefaultPreview2() {
                 Column {
                     WelkomTekst()
                     InputField()
-                    BestelScherm()
                 }
                 
             }
@@ -197,6 +197,24 @@ fun InputField(){
     }
 }
 
+class BestelSchermClass : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            ApiExampleTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Grey
+                ) {
+                    Box {
+                        BestelScherm()
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun BestelScherm() {
     var RodeBonen = "70%"
@@ -211,10 +229,13 @@ fun BestelScherm() {
         modifier = Modifier.fillMaxWidth()
     )
     {
-        item{Text(text = RodeBonen, fontSize = 35.sp)}
+        item{ Text(text = RodeBonen, fontSize = 35.sp) }
         item {
             Button(
-                onClick = { RodeWil++ }
+                onClick = { RodeWil++ },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.background
+                )
             )
             {
                 Text(text = "Rode Bonen")
@@ -225,7 +246,10 @@ fun BestelScherm() {
                 Text(text = ZwarteBonen, fontSize = 35.sp)
                 Spacer(modifier = Modifier.width(30.dp))
                 Button(
-                    onClick = { ZwarteWil++ }
+                    onClick = { ZwarteWil++ },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.background
+                    )
                 )
                 {
                     Text(text = "Zwarte Bonen")
@@ -239,6 +263,9 @@ fun BestelScherm() {
                     Spacer(modifier = Modifier.width(30.dp))
                     Button(
                         onClick = { WitteWil++ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.background
+                        )
                     )
                     {
                         Text(text = "Witte Bonen")
@@ -280,7 +307,10 @@ fun BestelScherm() {
                 onClick = {
                     if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
                     }
-                }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.background
+                )
             )
             {
                 Text(
@@ -289,5 +319,22 @@ fun BestelScherm() {
                 )
             }
         }
+        item { val context = LocalContext.current
+            Button(
+                onClick = {
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(5.dp)
+            ) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
+
+
+            } }
     }
 }
