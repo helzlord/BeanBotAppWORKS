@@ -65,4 +65,5 @@ dependencies {
 
     // zelf ingevuld
     implementation "androidx.compose.material3:material3:1.0.1"
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 }

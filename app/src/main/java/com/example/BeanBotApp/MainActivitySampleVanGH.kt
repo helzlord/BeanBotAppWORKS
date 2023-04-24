@@ -19,12 +19,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.BeanBotApp.api.NullOnEmptyConverterFactory
 import com.example.BeanBotApp.api.UserApi
 import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
 class MainActivitySampleVanGH : ComponentActivity() {
@@ -155,26 +156,31 @@ fun sendRequest(
     ip_adres : String?
 ) {
 
-    val ip = if(ip_adres.isNullOrEmpty()) "http://192.168.0.141:3000" else "http://"+ip_adres+":3000"
+    val default_ip = "http://192.168.4.1:80"
+    //"http://192.168.0.141:3000"
+    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":3000"
 
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(NullOnEmptyConverterFactory())
         .build()
 
     val api = retrofit.create(UserApi::class.java)
 
-    val call: Call<UserModel?>? = api.getUserById(id)
+    val call: Call<String?>? = api.getArduinoData()
 
-    call!!.enqueue(object: Callback<UserModel?> {
-        override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
+    call!!.enqueue(object: Callback<String?> {
+        override fun onResponse(call: Call<String?>, response: Response<String?>) {
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
-                profileState.value = response.body()!!.profile
+                //profileState.value = response.body()!!.toString()
             }
         }
 
-        override fun onFailure(call: Call<UserModel?>, t: Throwable) {
+        override fun onFailure(call: Call<String?>, t: Throwable) {
+            Log.d("WIFII",call.toString())
             Log.e("Main", "Failed mate " + t.message.toString())
         }
     })
@@ -185,34 +191,36 @@ fun postRequest(
     profileState: MutableState<ProfileModel>,
     ip_adres : String?
 ) {
-
-    val ip = if(ip_adres.isNullOrEmpty()) "http://192.168.0.141:3000" else "http://"+ip_adres+":3000"
+    val default_ip = "http://192.168.4.1:80"
+    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":3000"
 
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
         .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(NullOnEmptyConverterFactory())
         .build()
 
     val api = retrofit.create(UserApi::class.java)
 
     val profMod = ProfileModel("69","bob","test@test.test")
     val U = UserModel(profMod)
+    val txt = "ditISCOMMANDOOOO"
     Log.d("Main","blob:" + U.toString())
 
-    val call: Call<UserModel?>? = api.createUser(U)
+    val call: Call<String?>? = api.postCommand(txt)
 
 
-    call!!.enqueue(object: Callback<UserModel?> {
+    call!!.enqueue(object: Callback<String?> {
 
-        override fun onResponse(call: Call<UserModel?>, response: Response<UserModel?>) {
+        override fun onResponse(call: Call<String?>, response: Response<String?>) {
 
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
-                profileState.value = response.body()!!.profile
+                //profileState.value = response.body()!!.profile
             }
         }
 
-        override fun onFailure(call: Call<UserModel?>, t: Throwable) {
+        override fun onFailure(call: Call<String?>, t: Throwable) {
             Log.e("Main", "Failed mate " + t.message.toString())
         }
     })

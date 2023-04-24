@@ -10,9 +10,10 @@ import retrofit2.http.Path
 
 
 public interface UserApi {
-    @Headers(
+    /*@Headers(
         "Accept: application/json, text/html"
-    )
+    )*/
+    /*
     @GET("users/{id}")
     abstract fun getUserById(@Path("id") id: String): Call<UserModel?>?
     //@POST("users/{id}")
@@ -22,4 +23,17 @@ public interface UserApi {
     @POST("users")
 
     abstract fun createUser(@Body user: UserModel?): Call<UserModel?>?
+    */
+    @GET("dummy")
+    abstract fun getArduinoData(): Call<String?>?
+
+    //@POST("users/{id}")
+
+    //abstract fun createUser(@Path("id") id: String,@Body user: UserModel?): Call<UserModel?>?
+
+    @POST("CMDS/{commando}/CMDEND")
+
+    abstract fun postCommand(@Path("commando") commando: String): Call<String?>?
+    // Errors hier boeien niet echt want arduino leest cmds
+
 }
