@@ -198,7 +198,6 @@ fun InputField(){
         }
     }
 }
-
 class BestelSchermClass : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,178 +215,174 @@ class BestelSchermClass : ComponentActivity() {
         }
     }
 }
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun BestelScherm() {
+fun BestelSchermtest() {
     var RodeBonen = "70%"
     var ZwarteBonen = "50%"
     var WitteBonen = "69%"
-    var RodeWil = 0
-    var ZwarteWil = 0
-    var WitteWil = 0
+    // deze bovenstaande variabelen moeten hun waarden krijgen van get request
+    var RodeWil by remember { mutableStateOf(0) }
+    var ZwarteWil by remember { mutableStateOf(0) }
+    var WitteWil by remember { mutableStateOf(0) }
     var sliderPosition by remember { mutableStateOf(150f) }
     var gewichtBonen = sliderPosition.toInt()
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(vertical = 8.dp)
-    )
-    {
-        item {
-            Box(
-                modifier = Modifier
-                    .padding(30.dp),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                Text(
-                    text = "Klik op de gewenste kleur",
-                    style = MaterialTheme.typography.titleLarge.copy(
+        LazyColumn(
 
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Left,
-                        lineHeight = 30.sp,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(vertical = 8.dp)
+        )
+        {
+            item {
+                Box(
+                    modifier = Modifier
+                        .padding(30.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Text(
+                        text = "Klik op de gewenste kleur",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Left,
+                            lineHeight = 30.sp,
 
-                        )
-                )
-            }
-        }
-        item {
-            Row() {
-                Text(text = "Stock",
-                color = Color.White,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.width(80.dp))
-                Text(text = "Kleur",
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-            }
-        }
-        item{
-            Row() {
-                Text(
-                    text = RodeBonen, fontSize = 35.sp,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.width(30.dp))
-                Button(
-                    onClick = { RodeWil++ },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.background),
-                        modifier = Modifier.width(135.dp)
-                )
-                {
-                    Text(text = "Rode Bonen")
+                            )
+                    )
                 }
             }
-        }
-        item {
-            Row() {
-                Text(text = ZwarteBonen, fontSize = 35.sp,
-                    color = Color.White)
-                Spacer(modifier = Modifier.width(30.dp))
+            item {
+                Row() {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Stock", fontSize = 20.sp)
+                        Text(
+                            text = RodeBonen, fontSize = 35.sp
+                        )
+                        Text(
+                            text = ZwarteBonen, fontSize = 35.sp
+                        )
+                        Text(text = WitteBonen, fontSize = 35.sp)
+                    }
+                    Spacer(modifier = Modifier.width(25.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Kleur",
+                            fontSize = 20.sp
+                        )
+                        Button(
+                            onClick = { RodeWil++ },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
+                            modifier = Modifier.width(135.dp)
+                        )
+                        {
+                            Text(text = "Rode Bonen")
+                        }
+                        Button(
+                            onClick = { ZwarteWil++ },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
+                            modifier = Modifier.width(135.dp)
+                        )
+                        {
+                            Text(text = "Zwarte Bonen")
+                        }
+                        Button(
+                            onClick = { WitteWil++ },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
+                            modifier = Modifier.width(135.dp)
+                        )
+                        {
+                            Text(text = "Witte Bonen")
+                        }
+                    }
+
+                }
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+            item {
+                Box() {
+                    Text(
+                        text = "Duid het gewicht aan op de slider",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            item {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(1.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.width(50.dp),
+                        text = gewichtBonen.toString(),
+                        fontSize = 20.sp,
+                    )
+                }
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .padding(10.dp)
+                ) {
+                    Slider(
+                        modifier = Modifier.semantics {
+                            contentDescription = "Localized Description"
+                        },
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 150f..300f,
+                        steps = 150
+                    )
+                }
+
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+            item {
                 Button(
-                    onClick = { ZwarteWil++ },
+                    onClick = {
+                        if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
+                            //hier code voor post request met de variabelen: rodewil, zwartwil, witwil, gewicht
+                            //dan veranderen van scherm, alles weg en progressbar verschijnt met stop knop
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.background
-                    ),
-                    modifier = Modifier.width(135.dp)
+                    )
                 )
                 {
-                    Text(text = "Zwarte Bonen")
-                }
-            }
-        }
-        item {
-            Box() {
-                Row() {
-                    Text(text = WitteBonen, fontSize = 35.sp,
-                        color = Color.White)
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Button(
-                        onClick = { WitteWil++ },
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.background
-                        ),
-                        modifier = Modifier.width(135.dp)
+                    Text(
+                        text = "Order",
+                        fontSize = 50.sp
                     )
-                    {
-                        Text(text = "Witte Bonen")
-                    }
                 }
             }
-        }
-        item { Spacer(modifier = Modifier.height(35.dp)) }
-        item {
-            Box() {
-                Text(
-                    text = "Duid het gewicht aan op de slider",
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        item {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(1.dp)
-            ) {
-                Text(
-                    modifier = Modifier.width(50.dp),
-                    text = gewichtBonen.toString(),
-                    fontSize = 20.sp,
-                    color = Color.White
-                )
-            }
-        }
-        item {
-            Slider(
-                modifier = Modifier.semantics { contentDescription = "Localized Description"},
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it },
-                valueRange = 150f..300f,
-                steps = 150
-            )
-        }
-        item { Spacer(modifier = Modifier.height(35.dp)) }
-        item {
-            Button(
-                onClick = {
-                    if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.background
-                )
-            )
-            {
-                Text(
-                    text = "Order",
-                    fontSize = 50.sp
-                )
-            }
-        }
-        item { Spacer(modifier = Modifier.height(35.dp)) }
-        item { val context = LocalContext.current
-            Button(
-                onClick = {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier
-                    .padding(5.dp)
-            ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+            item {
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                        val intent = Intent(context, MainActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .padding(5.dp)
+                ) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
 
 
-            } }
+                }
+            }
     }
 }
