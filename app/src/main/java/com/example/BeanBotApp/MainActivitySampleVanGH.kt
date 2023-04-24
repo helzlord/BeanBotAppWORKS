@@ -138,7 +138,7 @@ fun MainScreen(IP : String?) {
                       }
                   }
               }
-
+                //groetjes
               
               Spacer(modifier = Modifier.height(15.dp))
 
