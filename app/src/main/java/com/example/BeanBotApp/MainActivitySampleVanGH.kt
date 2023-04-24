@@ -235,9 +235,9 @@ fun BestelScherm() {
     var RodeBonen = "70%"
     var ZwarteBonen = "50%"
     var WitteBonen = "69%"
-    var RodeWil = 0
-    var ZwarteWil = 0
-    var WitteWil = 0
+    var RodeWil by remember { mutableStateOf(0) }
+    var ZwarteWil by remember { mutableStateOf(0) }
+    var WitteWil by remember { mutableStateOf(0) }
     var sliderPosition by remember { mutableStateOf(150f) }
     var gewichtBonen = sliderPosition.toInt()
     LazyColumn(
