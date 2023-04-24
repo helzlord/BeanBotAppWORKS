@@ -1,6 +1,6 @@
 package com.example.BeanBotApp.api
 
-import com.example.BeanBotApp.UserModel
+
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

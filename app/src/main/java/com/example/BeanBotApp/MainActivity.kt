@@ -227,12 +227,13 @@ fun BestelSchermtest() {
     var WitteWil by remember { mutableStateOf(0) }
     var sliderPosition by remember { mutableStateOf(150f) }
     var gewichtBonen = sliderPosition.toInt()
-        LazyColumn(
+
+    LazyColumn(
 
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(vertical = 8.dp)
         )
-        {
+    {
             item {
                 Box(
                     modifier = Modifier

@@ -53,22 +53,13 @@ class MainActivitySampleVanGH : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     MainScreen(IP_BB)
-                    BestelScherm()
+
                 }
             }
         }
     }
 }
 
-data class ProfileModel(
-    var age: String,
-    var name: String,
-    var email: String,
-)
-
-data class UserModel(
-    var profile: ProfileModel
-)
 
 @Composable
 fun MainScreen(IP : String?) {
@@ -97,12 +88,8 @@ fun MainScreen(IP : String?) {
                   mutableStateOf(TextFieldValue())
               }
 
-              val profile = remember {
-                  mutableStateOf(ProfileModel(
-                      age = "",
-                      name = "",
-                      email = ""
-                  ))
+              val beanbotdata = remember {
+                  mutableStateOf("")
               }
 
 
@@ -124,11 +111,11 @@ fun MainScreen(IP : String?) {
                           onClick = {
                               val data = sendRequest(
                                   id = id.value.text,
-                                  profileState = profile,
+                                  dataState = beanbotdata,
                                   ip_adres = IP
                               )
 
-                              Log.d("Main Activity", profile.toString())
+                              Log.d("Main Activity", beanbotdata.toString())
                           }
                       ) {
                           Text(text = "Get Data")
@@ -140,11 +127,11 @@ fun MainScreen(IP : String?) {
                           onClick = {
                               val data = postRequest(
                                   id = id.value.text,
-                                  profileState = profile,
+                                  dataState = beanbotdata,
                                   ip_adres = IP
                               )
 
-                              Log.d("Main Activity", profile.toString())
+                              Log.d("Main Activity", beanbotdata.toString())
                           }
                       ) {
                           Text(text = "send Data")
@@ -156,7 +143,8 @@ fun MainScreen(IP : String?) {
               Spacer(modifier = Modifier.height(15.dp))
 
               Text(text = "Output: ",fontSize = 20.sp)
-              Text(text = profile.component1().toString(), fontSize = 20.sp)
+              Text(text = beanbotdata.toString(), fontSize = 20.sp)
+              BestelScherm()
           }
        }
    )
@@ -164,7 +152,7 @@ fun MainScreen(IP : String?) {
 
 fun sendRequest(
     id: String,
-    profileState: MutableState<ProfileModel>,
+    dataState: MutableState<String>,
     ip_adres : String?
 ) {
 
@@ -200,7 +188,7 @@ fun sendRequest(
 
 fun postRequest(
     id: String,
-    profileState: MutableState<ProfileModel>,
+    dataState: MutableState<String>,
     ip_adres : String?
 ) {
     val default_ip = "http://192.168.4.1:80"
@@ -214,10 +202,7 @@ fun postRequest(
 
     val api = retrofit.create(UserApi::class.java)
 
-    val profMod = ProfileModel("69","bob","test@test.test")
-    val U = UserModel(profMod)
     val txt = "ditISCOMMANDOOOO"
-    Log.d("Main","blob:" + U.toString())
 
     val call: Call<String?>? = api.postCommand(txt)
 
