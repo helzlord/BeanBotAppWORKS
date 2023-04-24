@@ -217,7 +217,7 @@ class BestelSchermClass : ComponentActivity() {
 }
 @Preview(showBackground = true)
 @Composable
-fun BestelScherm() {
+fun BestelSchermtest() {
     var RodeBonen = "70%"
     var ZwarteBonen = "50%"
     var WitteBonen = "69%"
