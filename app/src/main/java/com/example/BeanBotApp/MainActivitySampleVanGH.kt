@@ -84,7 +84,7 @@ fun MainScreen(IP : String?) {
               verticalArrangement = Arrangement.Center,
               horizontalAlignment = Alignment.CenterHorizontally
           ) {
-              val id = remember {
+              val custom_cmd = remember {
                   mutableStateOf(TextFieldValue())
               }
 
@@ -97,9 +97,9 @@ fun MainScreen(IP : String?) {
               Spacer(modifier = Modifier.height(15.dp))
 
               TextField(
-                  label = { Text(text = "User ID")},
-                  value = id.value,
-                  onValueChange = { id.value = it }
+                  label = { Text(text = "Custom Commando")},
+                  value = custom_cmd.value,
+                  onValueChange = { custom_cmd.value = it }
               )
 
               Spacer(modifier = Modifier.height(15.dp))
@@ -110,7 +110,7 @@ fun MainScreen(IP : String?) {
                       Button(
                           onClick = {
                               val data = sendRequest(
-                                  id = id.value.text,
+                                  cmd = custom_cmd.value.text,
                                   dataState = beanbotdata,
                                   ip_adres = IP
                               )
@@ -126,7 +126,7 @@ fun MainScreen(IP : String?) {
                       Button(
                           onClick = {
                               val data = postRequest(
-                                  id = id.value.text,
+                                  cmd = custom_cmd.value.text,
                                   dataState = beanbotdata,
                                   ip_adres = IP
                               )
@@ -134,7 +134,7 @@ fun MainScreen(IP : String?) {
                               Log.d("Main Activity", beanbotdata.toString())
                           }
                       ) {
-                          Text(text = "send Data")
+                          Text(text = "Send Data")
                       }
                   }
               }
@@ -151,7 +151,7 @@ fun MainScreen(IP : String?) {
 }
 
 fun sendRequest(
-    id: String,
+    cmd: String,
     dataState: MutableState<String>,
     ip_adres : String?
 ) {
@@ -187,7 +187,7 @@ fun sendRequest(
 }
 
 fun postRequest(
-    id: String,
+    cmd: String,
     dataState: MutableState<String>,
     ip_adres : String?
 ) {
@@ -202,9 +202,9 @@ fun postRequest(
 
     val api = retrofit.create(UserApi::class.java)
 
-    val txt = "ditISCOMMANDOOOO"
+    //val txt = "ditISCOMMANDOOOO"
 
-    val call: Call<String?>? = api.postCommand(txt)
+    val call: Call<String?>? = api.postCommand(cmd)
 
 
     call!!.enqueue(object: Callback<String?> {
