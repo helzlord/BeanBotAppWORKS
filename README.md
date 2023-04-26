@@ -3,6 +3,8 @@ Simple Android Compose API Example
 
 The code requires json-server with a data.json file containing the following:
 
+json-server --host [Your Network IP] data.json
+
 ```json
 {
   "users": [

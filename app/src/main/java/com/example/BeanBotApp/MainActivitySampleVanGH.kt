@@ -143,7 +143,7 @@ fun MainScreen(IP : String?) {
               Spacer(modifier = Modifier.height(15.dp))
 
               Text(text = "Output: ",fontSize = 20.sp)
-              Text(text = beanbotdata.toString(), fontSize = 20.sp)
+              Text(text = beanbotdata.value.toString(), fontSize = 20.sp)
               BestelScherm()
           }
        }
@@ -175,13 +175,15 @@ fun sendRequest(
         override fun onResponse(call: Call<String?>, response: Response<String?>) {
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
-                //profileState.value = response.body()!!.toString()
+                dataState.value = response.body()!!.toString()
+
             }
         }
 
         override fun onFailure(call: Call<String?>, t: Throwable) {
             Log.d("WIFII",call.toString())
             Log.e("Main", "Failed mate " + t.message.toString())
+            dataState.value = t.message.toString()
         }
     })
 }
@@ -213,12 +215,13 @@ fun postRequest(
 
             if(response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
-                //profileState.value = response.body()!!.profile
+                dataState.value = response.body()!!.toString()
             }
         }
 
         override fun onFailure(call: Call<String?>, t: Throwable) {
             Log.e("Main", "Failed mate " + t.message.toString())
+            dataState.value = t.message.toString()
         }
     })
 }
