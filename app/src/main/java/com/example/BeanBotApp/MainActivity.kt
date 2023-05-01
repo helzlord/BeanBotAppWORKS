@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Grey
+import com.example.BeanBotApp.ui.theme.Purple700
 import com.example.apiexample.R
 
 
@@ -165,7 +166,7 @@ fun InputField(){
                 //Anders raar lijntje onder search bar
                 colors = TextFieldDefaults.textFieldColors(unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
-                    textColor = MaterialTheme.colorScheme.primary,
+                    textColor = Purple700,
                     containerColor = MaterialTheme.colorScheme.surface),
 
 
@@ -175,8 +176,8 @@ fun InputField(){
                 onValueChange = {
                     defaultText = it
                 },
-                label = { Text("IP Bean Bot:", color = MaterialTheme.colorScheme.primary) },
-                placeholder = {Text("xxx.xxx.xxx",color =MaterialTheme.colorScheme.primary)},
+                label = { Text("IP Bean Bot:", color = Purple700) },
+                placeholder = {Text("xxx.xxx.xxx",color =Purple700)},
 
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -187,7 +188,8 @@ fun InputField(){
                     context.startActivity(intent)
                           },
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.background,
+                    containerColor = Purple700,
+                    contentColor = Color.White
                 ),
                 modifier = Modifier
                     .padding(5.dp)

@@ -10,10 +10,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -22,11 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +46,7 @@ import com.example.BeanBotApp.api.UserApi
 import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
 import com.example.BeanBotApp.ui.theme.WaarschuwingRood
+import com.example.apiexample.R
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -56,6 +66,7 @@ class MainActivitySampleVanGH : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
+
                     MainScreen(IP_BB)
 
                 }
@@ -64,15 +75,13 @@ class MainActivitySampleVanGH : ComponentActivity() {
     }
 }
 
-/*@Preview(showBackground = true)
+
 @Composable
 fun DefaultPreview4(){
-    val actieveBestelling = remember {
-        mutableStateOf(true)
-    }
-  PendingBestellingScherm(actieveBestelling, )
-}*/
+    MainScreen(IP = "122")
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(IP : String?) {
 
@@ -91,6 +100,7 @@ fun MainScreen(IP : String?) {
            )
        },
        content = {
+          BgImage2()
           Column(
               modifier = Modifier.fillMaxWidth(),
               verticalArrangement = Arrangement.Center,
@@ -111,11 +121,37 @@ fun MainScreen(IP : String?) {
 
               Spacer(modifier = Modifier.height(15.dp))
 
-              TextField(
-                  label = { Text(text = "Custom Commando")},
+              androidx.compose.material3.TextField(
+                  modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(vertical = 10.dp, horizontal = 20.dp),
+
+                  shape = RoundedCornerShape(22.dp),
+
+                  //Anders raar lijntje onder search bar
+                  colors = TextFieldDefaults.textFieldColors(
+                      unfocusedIndicatorColor = Color.Transparent,
+                      focusedIndicatorColor = Color.Transparent,
+                      textColor = Purple700,
+                      containerColor = MaterialTheme.colorScheme.surface
+                  ),
+
+
+
+
+                  value = custom_cmd.value,
+                  onValueChange = {
+                      custom_cmd.value = it
+                  },
+                  label = { Text(text = "Custom Commando",)},
+              )
+
+
+          /*    TextField(
+                  label = { Text(text = "Custom Commando",)},
                   value = custom_cmd.value,
                   onValueChange = { custom_cmd.value = it }
-              )
+              )*/
 
               Spacer(modifier = Modifier.height(15.dp))
 
@@ -165,8 +201,29 @@ fun MainScreen(IP : String?) {
               
               Spacer(modifier = Modifier.height(15.dp))
 
-              Text(text = "Output: ",fontSize = 20.sp)
-              Text(text = beanbotdata.value.toString(), fontSize = 20.sp)
+              Text(text = "Output: ",
+                  style = MaterialTheme.typography.titleLarge.copy(
+
+                      color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                      fontSize = 20.sp,
+                      fontWeight = FontWeight.Bold,
+                      textAlign = TextAlign.Left,
+                      lineHeight = 30.sp,
+
+                  )
+              )
+
+              Text(text = beanbotdata.value.toString(),
+                  style = MaterialTheme.typography.titleLarge.copy(
+
+                  color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                  fontSize = 20.sp,
+                  fontWeight = FontWeight.Bold,
+
+                  lineHeight = 20.sp,
+
+                  )
+              )
 
 
               if (actieveBestelling.value){
@@ -288,17 +345,17 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
         item {
             Box(
                 modifier = Modifier
-                    .padding(30.dp),
+                    .padding(10.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
                 androidx.compose.material3.Text(
-                    text = "Kies de gewenste bonen",
-                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Left,
-                        lineHeight = 30.sp,
+                    text = "Kies de gewenste boonkleur:",
+                    style = MaterialTheme.typography.titleLarge.copy(
 
+                        color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 5.sp,
                         )
                 )
             }
@@ -308,19 +365,35 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    androidx.compose.material3.Text(text = "Stock", fontSize = 20.sp)
-                    androidx.compose.material3.Text(
-                        text = RodeBonen, fontSize = 35.sp
+                    androidx.compose.material3.Text(text = "Stock",
+                        style = MaterialTheme.typography.titleLarge.copy(
+
+                            color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 20.sp,
+                            lineHeight = 20.sp,
+
+                            )
                     )
                     androidx.compose.material3.Text(
-                        text = ZwarteBonen, fontSize = 35.sp
+                        text = RodeBonen, fontSize = 35.sp,color = Color.White
                     )
-                    androidx.compose.material3.Text(text = WitteBonen, fontSize = 35.sp)
+                    androidx.compose.material3.Text(
+                        text = ZwarteBonen, fontSize = 35.sp,color = Color.White
+                    )
+                    androidx.compose.material3.Text(
+                        text = WitteBonen, fontSize = 35.sp,color = Color.White
+                    )
                 }
-                Spacer(modifier = Modifier.width(25.dp))
+                Spacer(modifier = Modifier.width(40.dp))
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     androidx.compose.material3.Text(text = "Kleur bonen",
-                        fontSize = 20.sp
+                        style = MaterialTheme.typography.titleLarge.copy(
+
+                            color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 20.sp,
+                            lineHeight = 20.sp,
+
+                            )
                     )
                     androidx.compose.material3.Button(
                         onClick = {
@@ -376,8 +449,14 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
             Box() {
                 androidx.compose.material3.Text(
                     text = "Hoeveel gram bonen wenst u?",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge.copy(
+
+                        color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 25.sp,
+
+                        )
                 )
             }
         }
@@ -388,8 +467,16 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
             ) {
                 androidx.compose.material3.Text(
                     modifier = Modifier.width(50.dp),
-                    text = gewichtBonen.toString(),
-                    fontSize = 20.sp,
+                    text = gewichtBonen.toString()+"g",
+                    style = MaterialTheme.typography.titleLarge.copy(
+
+                        color = Color.White,//MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        
+                        textAlign = TextAlign.Left,
+                        lineHeight = 30.sp,
+
+                        ),
                 )
             }
         }
@@ -483,21 +570,26 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
         item { Spacer(modifier = Modifier.height(35.dp)) }
 
 
-        item { val context = LocalContext.current
-            androidx.compose.material3.Button(
-                onClick = {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = Purple700
-                ),
-                modifier = Modifier
-                    .padding(5.dp)
-            ) {
-                androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
-            } }
+        item {GoBackButton() }
+    }
+}
+
+@Composable
+fun GoBackButton() {
+    val context = LocalContext.current
+    androidx.compose.material3.Button(
+        onClick = {
+            val intent = Intent(context, MainActivity::class.java)
+            context.startActivity(intent)
+        },
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color.White,
+            containerColor = Purple700
+        ),
+        modifier = Modifier
+            .padding(5.dp)
+    ) {
+        androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
     }
 }
 
@@ -627,6 +719,20 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     Text("Bevestig bestelling", color = Color.White)
                 }
             }
+            GoBackButton()
         }
     }
+}
+
+@Composable
+fun BgImage2(){
+    Box(
+        modifier = with (Modifier){
+            fillMaxSize()
+                .paint(
+                    // Replace with your image id
+                    painterResource(id = R.drawable.boontjes),
+                    contentScale = ContentScale.FillHeight)
+
+        })
 }
