@@ -144,7 +144,7 @@ fun MainScreen(IP : String?) {
                   onValueChange = {
                       custom_cmd.value = it
                   },
-                  label = { Text(text = "Custom Commando",)},
+                  label = { Text(text = "Custom Commando", color = Purple700)},
               )
 
 
