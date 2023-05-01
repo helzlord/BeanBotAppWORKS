@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.BeanBotApp.api.NullOnEmptyConverterFactory
@@ -60,7 +61,21 @@ class MainActivitySampleVanGH : ComponentActivity() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview4(){
 
+    ApiExampleTheme {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            MainScreen("12")
+
+        }
+    }
+}
 @Composable
 fun MainScreen(IP : String?) {
 
@@ -107,7 +122,7 @@ fun MainScreen(IP : String?) {
 
               Row() {
                   Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-                      Button(
+                      androidx.compose.material3.Button(
                           onClick = {
                               val data = sendRequest(
                                   cmd = custom_cmd.value.text,
@@ -116,14 +131,18 @@ fun MainScreen(IP : String?) {
                               )
 
                               Log.d("Main Activity", beanbotdata.toString())
-                          }
+                          },
+                          colors = ButtonDefaults.buttonColors(
+                              contentColor = Color.White,
+                              containerColor = Purple700
+                          )
                       ) {
-                          Text(text = "Get Data")
+                          Text(text = "Get Data", color = Color.White)
                       }
                   }
 
                   Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-                      Button(
+                      androidx.compose.material3.Button(
                           onClick = {
                               val data = postRequest(
                                   cmd = custom_cmd.value.text,
@@ -132,9 +151,13 @@ fun MainScreen(IP : String?) {
                               )
 
                               Log.d("Main Activity", beanbotdata.toString())
-                          }
+                          },
+                          colors = ButtonDefaults.buttonColors(
+                              contentColor = Color.White,
+                              containerColor = Purple700
+                          )
                       ) {
-                          Text(text = "Send Data")
+                          Text(text = "Send Data", color = Color.White)
                       }
                   }
               }
@@ -228,14 +251,22 @@ fun postRequest(
 
 @Composable
 fun BestelScherm() {
-    var RodeBonen = "70%"
-    var ZwarteBonen = "50%"
-    var WitteBonen = "69%"
-    var RodeWil by remember { mutableStateOf(0) }
-    var ZwarteWil by remember { mutableStateOf(0) }
-    var WitteWil by remember { mutableStateOf(0) }
+    var RodeBonen = "0%"
+    var ZwarteBonen = "0%"
+    var WitteBonen = "0%"
+
+    var RodeWil by remember { mutableStateOf(false) }
+    var ZwarteWil by remember { mutableStateOf(false) }
+    var WitteWil by remember { mutableStateOf(false) }
+
+    val GESELECTEERD_KLEUR = Color.Green
+
+    var gewensteKleur by remember { mutableStateOf("") }
+
     var sliderPosition by remember { mutableStateOf(150f) }
+
     var gewichtBonen = sliderPosition.toInt()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -249,7 +280,7 @@ fun BestelScherm() {
                 contentAlignment = Alignment.TopCenter
             ) {
                 androidx.compose.material3.Text(
-                    text = "Klik op de gewenste kleur",
+                    text = "Kies de gewenste bonen",
                     style = androidx.compose.material3.MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
@@ -276,37 +307,53 @@ fun BestelScherm() {
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    androidx.compose.material3.Text(text = "Kleur",
+                    androidx.compose.material3.Text(text = "Kleur bonen",
                         fontSize = 20.sp
                     )
                     androidx.compose.material3.Button(
-                        onClick = { RodeWil++ },
+                        onClick = {
+                            ZwarteWil = false
+                            RodeWil = true
+                            WitteWil = false },
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.background),
-                        modifier = Modifier.width(135.dp)
-                    )
-                    {
-                        androidx.compose.material3.Text(text = "Rode Bonen")
-                    }
-                    androidx.compose.material3.Button(
-                        onClick = { ZwarteWil++ },
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.background
+                            contentColor = if (RodeWil) Color.Black else Color.White,
+                            containerColor = if (RodeWil) GESELECTEERD_KLEUR else Purple700
                         ),
                         modifier = Modifier.width(135.dp)
                     )
                     {
-                        androidx.compose.material3.Text(text = "Zwarte Bonen")
+                        androidx.compose.material3.Text(text = "Rood")
                     }
+
                     androidx.compose.material3.Button(
-                        onClick = { WitteWil++ },
+                        onClick = {
+                            ZwarteWil = true
+                            RodeWil = false
+                            WitteWil = false
+                                  },
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.background
+                            contentColor = if (ZwarteWil) Color.Black else Color.White,
+                            containerColor = if (ZwarteWil) GESELECTEERD_KLEUR else Purple700
                         ),
                         modifier = Modifier.width(135.dp)
                     )
                     {
-                        androidx.compose.material3.Text(text = "Witte Bonen")
+                        androidx.compose.material3.Text(text = "Zwart")
+                    }
+
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            ZwarteWil = false
+                            RodeWil = false
+                            WitteWil = true},
+                        colors = ButtonDefaults.buttonColors(
+                                contentColor = if (WitteWil) Color.Black else Color.White,
+                                containerColor = if (WitteWil) GESELECTEERD_KLEUR else Purple700
+                        ),
+                        modifier = Modifier.width(135.dp)
+                    )
+                    {
+                        androidx.compose.material3.Text(text = "Wit")
                     }
                 }
 
@@ -316,7 +363,7 @@ fun BestelScherm() {
         item {
             Box() {
                 androidx.compose.material3.Text(
-                    text = "Duid het gewicht aan op de slider",
+                    text = "Hoeveel gram bonen wenst u?",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -337,14 +384,15 @@ fun BestelScherm() {
         item {
             Box(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(horizontal = 50.dp)
             ) {
                 androidx.compose.material3.Slider(
                     modifier = Modifier.semantics { contentDescription = "Localized Description"},
                     value = sliderPosition,
                     onValueChange = { sliderPosition = it },
                     valueRange = 150f..300f,
-                    steps = 150
+                    steps = 150,
+
                 )
             }
 
@@ -353,17 +401,28 @@ fun BestelScherm() {
         item {
             androidx.compose.material3.Button(
                 onClick = {
-                    if ((RodeWil > 0) || (ZwarteWil > 0) || (WitteWil > 0)) {
+                    if ( (RodeWil || ZwarteWil || WitteWil) && (gewichtBonen in 150..300)) {
+                        if (RodeWil){
+                            gewensteKleur = "rood"
+                        }else if(ZwarteWil){
+                            gewensteKleur = "zwart"
+                        }else if(WitteWil){
+                            gewensteKleur = "wit"
+                        }
+                        plaatsBestelling(gewensteKleur,gewichtBonen)
+                    }else{
+
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.background
+                    contentColor = Color.White,
+                    containerColor = Purple700
                 )
             )
             {
                 androidx.compose.material3.Text(
-                    text = "Order",
-                    fontSize = 50.sp
+                    text = "Bestel",
+                    fontSize = 35.sp
                 )
             }
         }
@@ -375,15 +434,17 @@ fun BestelScherm() {
                     context.startActivity(intent)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                    contentColor = Color.White,
+                    containerColor = Purple700
                 ),
                 modifier = Modifier
                     .padding(5.dp)
             ) {
                 androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
-
-
             } }
     }
+}
+
+fun plaatsBestelling(gewensteKleur: Any, gewichtBonen: Int) {
+    Log.d("debuggin","$gewensteKleur en $gewichtBonen")
 }
