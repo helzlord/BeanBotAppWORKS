@@ -3,6 +3,8 @@ package com.example.BeanBotApp
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,13 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.BeanBotApp.api.NullOnEmptyConverterFactory
 import com.example.BeanBotApp.api.UserApi
 import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
+import com.example.BeanBotApp.ui.theme.WaarschuwingRood
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -47,11 +49,12 @@ class MainActivitySampleVanGH : ComponentActivity() {
             val IP_BB:String? = intent.getStringExtra("IP_BeanBot").toString()
 
 
+
             ApiExampleTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = Color.White
                 ) {
                     MainScreen(IP_BB)
 
@@ -61,21 +64,15 @@ class MainActivitySampleVanGH : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun DefaultPreview4(){
-
-    ApiExampleTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colors.background
-        ) {
-            MainScreen("12")
-
-        }
+    val actieveBestelling = remember {
+        mutableStateOf(true)
     }
-}
+  PendingBestellingScherm(actieveBestelling, )
+}*/
+
 @Composable
 fun MainScreen(IP : String?) {
 
@@ -107,6 +104,9 @@ fun MainScreen(IP : String?) {
                   mutableStateOf("")
               }
 
+              var actieveBestelling = remember{ mutableStateOf(false)}
+
+
 
 
               Spacer(modifier = Modifier.height(15.dp))
@@ -124,8 +124,8 @@ fun MainScreen(IP : String?) {
                   Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                       androidx.compose.material3.Button(
                           onClick = {
-                              val data = sendRequest(
-                                  cmd = custom_cmd.value.text,
+                              val data = getRequest(
+
                                   dataState = beanbotdata,
                                   ip_adres = IP
                               )
@@ -167,21 +167,27 @@ fun MainScreen(IP : String?) {
 
               Text(text = "Output: ",fontSize = 20.sp)
               Text(text = beanbotdata.value.toString(), fontSize = 20.sp)
-              BestelScherm()
+
+
+              if (actieveBestelling.value){
+                  PendingBestellingScherm(actieveBestelling,beanbotdata,IP)
+              }else{
+                  BestelScherm(actieveBestelling,beanbotdata,IP)
+              }
+
           }
        }
    )
 }
 
-fun sendRequest(
-    cmd: String,
+fun getRequest(
     dataState: MutableState<String>,
     ip_adres : String?
 ) {
 
     val default_ip = "http://192.168.4.1:80"
     //"http://192.168.0.141:3000"
-    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":3000"
+    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":8080"
 
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
@@ -217,7 +223,7 @@ fun postRequest(
     ip_adres : String?
 ) {
     val default_ip = "http://192.168.4.1:80"
-    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":3000"
+    val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":8080"
 
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
@@ -250,7 +256,7 @@ fun postRequest(
 }
 
 @Composable
-fun BestelScherm() {
+fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableState<String>, ip_adres : String? ) {
     var RodeBonen = "0%"
     var ZwarteBonen = "0%"
     var WitteBonen = "0%"
@@ -267,6 +273,12 @@ fun BestelScherm() {
 
     var gewichtBonen = sliderPosition.toInt()
 
+    var bestelling_fout by remember { mutableStateOf(false) }
+    var server_fout = remember { mutableStateOf(false) }
+
+    var arduino_respons = remember {
+        mutableStateOf("")
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -398,10 +410,49 @@ fun BestelScherm() {
 
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
+
+        if (bestelling_fout){
+
+            item{
+                Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(1.dp)
+                ){
+                    Text("Kies een bonenkleur.",color = WaarschuwingRood)}
+                }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
+
+        if (server_fout.value){
+
+            item{
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(1.dp)
+                ){
+                    val er:String =arduino_respons.value
+                    Column{
+
+                        Text("Er ging iets mis met de server",color = WaarschuwingRood)
+                        Text("Probeer later opnieuw",color = WaarschuwingRood)
+                        Text("Fout: $er",color = WaarschuwingRood)
+                    }
+
+                }
+
+
+
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
+
+
         item {
             androidx.compose.material3.Button(
                 onClick = {
                     if ( (RodeWil || ZwarteWil || WitteWil) && (gewichtBonen in 150..300)) {
+
+                        bestelling_fout = false
                         if (RodeWil){
                             gewensteKleur = "rood"
                         }else if(ZwarteWil){
@@ -409,9 +460,12 @@ fun BestelScherm() {
                         }else if(WitteWil){
                             gewensteKleur = "wit"
                         }
-                        plaatsBestelling(gewensteKleur,gewichtBonen)
-                    }else{
 
+                        plaatsBestelling(gewensteKleur,gewichtBonen, ip_adres,arduino_respons,actieveBestelling,server_fout)
+
+
+                    }else{
+                        bestelling_fout = true
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -427,6 +481,8 @@ fun BestelScherm() {
             }
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
+
+
         item { val context = LocalContext.current
             androidx.compose.material3.Button(
                 onClick = {
@@ -445,6 +501,132 @@ fun BestelScherm() {
     }
 }
 
-fun plaatsBestelling(gewensteKleur: Any, gewichtBonen: Int) {
+
+fun plaatsBestelling(
+    gewensteKleur: Any,
+    gewichtBonen: Int,
+    ip_adres: String?,
+    arduino_response: MutableState<String>,
+    actieveBestelling: MutableState<Boolean>,
+    server_fout: MutableState<Boolean>
+) {
+
     Log.d("debuggin","$gewensteKleur en $gewichtBonen")
+
+
+    postRequest("$gewensteKleur+$gewichtBonen", arduino_response,ip_adres)
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        //Do something after 100ms
+        getRequest(arduino_response, ip_adres)
+    }, 100)
+
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        //Do something after 100ms
+        if (arduino_response.value == "ok"){
+            Log.d("helo","went well + $arduino_response")
+            actieveBestelling.value = true
+            server_fout.value = false
+        }else{
+            Log.d("helo","went bad + $arduino_response")
+            server_fout.value = true
+        }
+    }, 400)
+
+
+}
+
+@Composable
+fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: MutableState<String> ,ip_adres : String? ){
+    Box(
+        modifier = Modifier.padding(1.dp),
+        contentAlignment = Alignment.Center
+    ){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+
+        ) {
+            val arduino_response = remember {
+                mutableStateOf("")
+            }
+            var fout by remember {
+                mutableStateOf(false)
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+            Text("Even geduld, uw bestelling wordt verwerkt...")
+
+            Spacer(modifier = Modifier.height(35.dp))
+            if (fout){
+
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(2.dp)
+                ){
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Text("Geen OK respons van server gekregen",color = WaarschuwingRood)}
+
+                 Spacer(modifier = Modifier.height(35.dp))
+            }
+
+            Row{
+                androidx.compose.material3.Button(
+                    onClick = {
+                        postRequest("stop", dataState,ip_adres)
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            getRequest(arduino_response, ip_adres)
+                        }, 100)
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            if ( arduino_response.value == "ok"){
+                                actieveBestelling.value = false
+                            }else{
+                                fout = true
+                            }
+                        }, 400)
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+
+                        containerColor = WaarschuwingRood
+                    )
+                ){
+                    Text("Annuleer bestelling", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.width (20.dp))
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                        postRequest("comfirmed", dataState,ip_adres)
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            getRequest(arduino_response, ip_adres)
+                        }, 100) // arduino tijd geven om in te gaan op post
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            if ( arduino_response.value == "ok"){
+                                actieveBestelling.value = false
+                            }else{
+                                fout = true
+                            }
+                        }, 400) // tijd geven om response te krijgen
+                    },
+                    colors = ButtonDefaults.buttonColors(
+
+                        containerColor = Purple700
+                    )
+                ){
+                    Text("Bevestig bestelling", color = Color.White)
+                }
+            }
+        }
+    }
 }

@@ -24,7 +24,7 @@ public interface UserApi {
 
     abstract fun createUser(@Body user: UserModel?): Call<UserModel?>?
     */
-    @GET("getRequest")
+    @GET("index")
     abstract fun getArduinoData(): Call<String?>?
 
     //@POST("users/{id}")

@@ -9,3 +9,4 @@ val Teal200 = Color(0xFF03DAC5)
 
 //zelf ingevoegd
 val Grey = Color(0xFF666666)
+val WaarschuwingRood = Color(0xFFFF4949)
