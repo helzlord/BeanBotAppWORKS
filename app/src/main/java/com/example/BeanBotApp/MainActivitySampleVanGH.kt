@@ -47,6 +47,7 @@ import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
 import com.example.BeanBotApp.ui.theme.WaarschuwingRood
 import com.example.apiexample.R
+import org.intellij.lang.annotations.JdkConstants.FontStyle
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -156,8 +157,8 @@ fun MainScreen(IP : String?) {
               Spacer(modifier = Modifier.height(15.dp))
 
 
-              Row() {
-                  Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+              Row {
+                  Box(modifier = Modifier.padding(10.dp, 0.dp, 30.dp, 0.dp)) {
                       androidx.compose.material3.Button(
                           onClick = {
                               val data = getRequest(
@@ -177,7 +178,9 @@ fun MainScreen(IP : String?) {
                       }
                   }
 
-                  Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+                  GoBackButton()
+
+                  Box(modifier = Modifier.padding(30.dp, 0.dp, 10.dp, 0.dp)) {
                       androidx.compose.material3.Button(
                           onClick = {
                               val data = postRequest(
@@ -196,6 +199,7 @@ fun MainScreen(IP : String?) {
                           Text(text = "Send Data", color = Color.White)
                       }
                   }
+
               }
                 //groetjes
               
@@ -314,9 +318,9 @@ fun postRequest(
 
 @Composable
 fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableState<String>, ip_adres : String? ) {
-    var RodeBonen = "0%"
-    var ZwarteBonen = "0%"
-    var WitteBonen = "0%"
+    var RodeBonen = remember{ mutableStateOf(0) }
+    var ZwarteBonen = remember{ mutableStateOf(0) }
+    var WitteBonen = remember{ mutableStateOf(0) }
 
     var RodeWil by remember { mutableStateOf(false) }
     var ZwarteWil by remember { mutableStateOf(false) }
@@ -332,8 +336,9 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
 
     var bestelling_fout by remember { mutableStateOf(false) }
     var server_fout = remember { mutableStateOf(false) }
+    var stock_wordt_gemeten = remember { mutableStateOf(false) }
 
-    var arduino_respons = remember {
+    var arduino_response = remember {
         mutableStateOf("")
     }
     LazyColumn(
@@ -375,13 +380,13 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                             )
                     )
                     androidx.compose.material3.Text(
-                        text = RodeBonen, fontSize = 35.sp,color = Color.White
+                        text = RodeBonen.value.toString()+"%", fontSize = 35.sp,color = Color.White
                     )
                     androidx.compose.material3.Text(
-                        text = ZwarteBonen, fontSize = 35.sp,color = Color.White
+                        text = ZwarteBonen.value.toString()+"%", fontSize = 35.sp,color = Color.White
                     )
                     androidx.compose.material3.Text(
-                        text = WitteBonen, fontSize = 35.sp,color = Color.White
+                        text = WitteBonen.value.toString()+"%", fontSize = 35.sp,color = Color.White
                     )
                 }
                 Spacer(modifier = Modifier.width(40.dp))
@@ -444,7 +449,106 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
 
             }
         }
+        item{
+            Spacer(modifier = Modifier.width(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp,vertical=10.dp),
+                horizontalArrangement = Arrangement.Center
+            
+
+            ){
+                androidx.compose.material3.Button(
+                    onClick = {
+                                postRequest("getStock", arduino_response,ip_adres)
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    //Do something after 100ms
+                                    getRequest(arduino_response, ip_adres)
+                                }, 100)
+
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    //Do something after 100ms
+                                    if (arduino_response.value == "ok"){
+                                        Log.d("helo","went well + $arduino_response")
+                                        stock_wordt_gemeten.value = true
+                                        server_fout.value = false
+                                    }else{
+                                        Log.d("helo","went bad + $arduino_response")
+                                        server_fout.value = true
+                                    }
+                                }, 400)
+                              },
+
+                    colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                        containerColor = Purple700
+                    )
+                ) {
+                    Text("Meet de stock",
+                        fontSize = 12.sp ,
+                        color= Color.White)
+                }
+
+                Spacer(modifier =Modifier.width(35.dp) )
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                                postRequest("getStockVal", arduino_response,ip_adres)
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    //Do something after 100ms
+                                    getRequest(arduino_response, ip_adres)
+                                }, 100)
+    
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    val resp = arduino_response.value
+                                    //Do something after 100ms
+                                    if (resp.length == 12){ // stock info heeft de vorm RxxxZxxxWxxx
+                                        RodeBonen.value = resp.substring(1,4).toInt()
+                                        ZwarteBonen.value = resp.substring(5,8).toInt()
+                                        WitteBonen.value = resp.substring(9,12).toInt()
+
+                                        Log.d("helo","went well")
+
+                                        stock_wordt_gemeten.value = false
+                                        server_fout.value = false
+                                    }else{
+
+                                        Log.d("helo","went bad + $arduino_response")
+                                        server_fout.value = true
+
+                                    }
+                                }, 400)
+                              },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        containerColor = Purple700
+                    )
+                ) {
+                    Text("Vernieuw de stockwaarden",
+                        fontSize=12.sp,
+                        color= Color.White)
+                }
+            }
+
+        }
+
         item { Spacer(modifier = Modifier.height(35.dp)) }
+        if (stock_wordt_gemeten.value){
+
+            item{
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(1.dp)
+                ){
+                    Text("Geen bestelling plaatsen terwijl de Bean Bot meet",color = WaarschuwingRood)}
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
         item {
             Box() {
                 androidx.compose.material3.Text(
@@ -517,7 +621,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.padding(1.dp)
                 ){
-                    val er:String =arduino_respons.value
+                    val er:String =arduino_response.value
                     Column{
 
                         Text("Er ging iets mis met de server",color = WaarschuwingRood)
@@ -548,7 +652,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                             gewensteKleur = "wit"
                         }
 
-                        plaatsBestelling(gewensteKleur,gewichtBonen, ip_adres,arduino_respons,actieveBestelling,server_fout)
+                        plaatsBestelling(gewensteKleur,gewichtBonen, ip_adres,arduino_response,actieveBestelling,server_fout)
 
 
                     }else{
@@ -569,8 +673,6 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
 
-
-        item {GoBackButton() }
     }
 }
 
@@ -719,7 +821,7 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     Text("Bevestig bestelling", color = Color.White)
                 }
             }
-            GoBackButton()
+
         }
     }
 }
