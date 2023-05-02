@@ -47,6 +47,8 @@ import com.example.BeanBotApp.ui.theme.ApiExampleTheme
 import com.example.BeanBotApp.ui.theme.Purple700
 import com.example.BeanBotApp.ui.theme.WaarschuwingRood
 import com.example.apiexample.R
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import org.intellij.lang.annotations.JdkConstants.FontStyle
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
@@ -286,8 +288,10 @@ fun postRequest(
     val default_ip = "http://192.168.4.1:80"
     val ip = if(ip_adres.isNullOrEmpty()) default_ip else "http://"+ip_adres+":8080"
 
+
     val retrofit = Retrofit.Builder()
         .baseUrl(ip)
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .addConverterFactory(NullOnEmptyConverterFactory())
         .build()
@@ -466,12 +470,12 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     //Do something after 100ms
                                     getRequest(arduino_response, ip_adres)
-                                }, 100)
+                                }, 2500)
 
 
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     //Do something after 100ms
-                                    if (arduino_response.value == "ok"){
+                                    if (arduino_response.value.contains("ok")){
                                         Log.d("helo","went well + $arduino_response")
                                         stock_wordt_gemeten.value = true
                                         server_fout.value = false
@@ -479,7 +483,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                         Log.d("helo","went bad + $arduino_response")
                                         server_fout.value = true
                                     }
-                                }, 400)
+                                }, 5500)
                               },
 
                     colors = ButtonDefaults.buttonColors(
@@ -501,7 +505,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     //Do something after 100ms
                                     getRequest(arduino_response, ip_adres)
-                                }, 100)
+                                }, 2500)
     
 
                                 Handler(Looper.getMainLooper()).postDelayed({
@@ -522,7 +526,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                         server_fout.value = true
 
                                     }
-                                }, 400)
+                                }, 5500)
                               },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White,
@@ -612,6 +616,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                     Text("Kies een bonenkleur.",color = WaarschuwingRood)}
                 }
             item { Spacer(modifier = Modifier.height(35.dp)) }
+
         }
 
         if (server_fout.value){
@@ -633,6 +638,20 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
 
 
 
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+            item{
+                androidx.compose.material3.Button(
+                    onClick = {
+                              actieveBestelling.value = true
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = WaarschuwingRood
+                    )
+                ){
+                    Text("Toch verdergaan")
+                }
             }
             item { Spacer(modifier = Modifier.height(35.dp)) }
         }
@@ -713,20 +732,22 @@ fun plaatsBestelling(
     Handler(Looper.getMainLooper()).postDelayed({
         //Do something after 100ms
         getRequest(arduino_response, ip_adres)
-    }, 100)
+        Log.d("debuggin","na eerste pauze")
+    }, 2500)
 
 
     Handler(Looper.getMainLooper()).postDelayed({
-        //Do something after 100ms
-        if (arduino_response.value == "ok"){
-            Log.d("helo","went well + $arduino_response")
-            actieveBestelling.value = true
-            server_fout.value = false
-        }else{
-            Log.d("helo","went bad + $arduino_response")
-            server_fout.value = true
-        }
-    }, 400)
+            //Do something after 100ms
+            if (arduino_response.value.contains("ok")) {
+                Log.d("helo", "went well + $arduino_response en test +$i")
+                actieveBestelling.value = true
+                server_fout.value = false
+
+            } else {
+                Log.d("helo", "went bad + $arduino_response en test +$i")
+                server_fout.value = true
+            }
+            Log.d("debuggin", "na tweede pauze") }, 5500)
 
 
 }
@@ -763,7 +784,21 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     Spacer(modifier = Modifier.height(15.dp))
                     Text("Geen OK respons van server gekregen",color = WaarschuwingRood)}
 
-                 Spacer(modifier = Modifier.height(35.dp))
+                     Spacer(modifier = Modifier.height(35.dp))
+
+                        androidx.compose.material3.Button(
+                            onClick = {
+                                actieveBestelling.value = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.White,
+                                containerColor = WaarschuwingRood
+                            )
+                        ){
+                            Text("Toch verdergaan")
+                        }
+
+                     Spacer(modifier = Modifier.height(35.dp))
             }
 
             Row{
@@ -774,16 +809,16 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                         Handler(Looper.getMainLooper()).postDelayed({
                             //Do something after 100ms
                             getRequest(arduino_response, ip_adres)
-                        }, 100)
+                        }, 2500)
 
                         Handler(Looper.getMainLooper()).postDelayed({
                             //Do something after 100ms
-                            if ( arduino_response.value == "ok"){
+                            if ( arduino_response.value.contains("ok")){
                                 actieveBestelling.value = false
                             }else{
                                 fout = true
                             }
-                        }, 400)
+                        }, 5500)
 
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -802,16 +837,16 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                         Handler(Looper.getMainLooper()).postDelayed({
                             //Do something after 100ms
                             getRequest(arduino_response, ip_adres)
-                        }, 100) // arduino tijd geven om in te gaan op post
+                        }, 2500) // arduino tijd geven om in te gaan op post
 
                         Handler(Looper.getMainLooper()).postDelayed({
                             //Do something after 100ms
-                            if ( arduino_response.value == "ok"){
+                            if ( arduino_response.value.contains("ok") ){
                                 actieveBestelling.value = false
                             }else{
                                 fout = true
                             }
-                        }, 400) // tijd geven om response te krijgen
+                        }, 5500) // tijd geven om response te krijgen
                     },
                     colors = ButtonDefaults.buttonColors(
 
