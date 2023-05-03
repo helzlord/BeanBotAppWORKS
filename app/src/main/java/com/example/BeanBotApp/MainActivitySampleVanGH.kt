@@ -342,9 +342,15 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
     var server_fout = remember { mutableStateOf(false) }
     var stock_wordt_gemeten = remember { mutableStateOf(false) }
 
+    var kijkOfOkeResponseBijStockMeten = remember { mutableStateOf(false) }
+    var kijkOfOkeResponseBijBestelling = remember { mutableStateOf(false) }
+
+
     var arduino_response = remember {
         mutableStateOf("")
     }
+
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -458,32 +464,17 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp,vertical=10.dp),
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.Center
             
 
             ){
                 androidx.compose.material3.Button(
                     onClick = {
-                                postRequest("getStock", arduino_response,ip_adres)
+                        postRequest("getStock", arduino_response,ip_adres)
 
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    //Do something after 100ms
-                                    getRequest(arduino_response, ip_adres)
-                                }, 2500)
+                        kijkOfOkeResponseBijStockMeten.value = true
 
-
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    //Do something after 100ms
-                                    if (arduino_response.value.contains("ok")){
-                                        Log.d("helo","went well + $arduino_response")
-                                        stock_wordt_gemeten.value = true
-                                        server_fout.value = false
-                                    }else{
-                                        Log.d("helo","went bad + $arduino_response")
-                                        server_fout.value = true
-                                    }
-                                }, 5500)
                               },
 
                     colors = ButtonDefaults.buttonColors(
@@ -501,6 +492,8 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                 androidx.compose.material3.Button(
                     onClick = {
                                 postRequest("getStockVal", arduino_response,ip_adres)
+
+                                //dit is met delay toch
 
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     //Do something after 100ms
@@ -606,6 +599,86 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
         }
         item { Spacer(modifier = Modifier.height(35.dp)) }
 
+        if (kijkOfOkeResponseBijStockMeten.value){
+
+
+            item{
+                androidx.compose.material3.Button(
+                    onClick = {
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            getRequest(arduino_response, ip_adres) }, 200)
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (arduino_response.value.contains("ok")) {
+                                Log.d("helo", "went well + $arduino_response")
+                                stock_wordt_gemeten.value = true
+
+                                kijkOfOkeResponseBijStockMeten.value = false
+                                server_fout.value = false
+                            } else {
+                                Log.d("helo", "went bad + $arduino_response")
+                                server_fout.value = true
+                            }
+                        }, 300)
+
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.Green
+                    )
+                ){
+                    Text("Controleer op response van server")
+                }
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
+
+        if (kijkOfOkeResponseBijBestelling.value){
+
+
+            item{
+                androidx.compose.material3.Button(
+                    onClick = {
+
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            getRequest(arduino_response, ip_adres)
+                            Log.d("debuggin","na eerste pauze")
+                        }, 200)
+
+
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                        if (arduino_response.value.contains("ok")) {
+                            Log.d("helo", "went well + $arduino_response en test")
+                            actieveBestelling.value = true
+                            kijkOfOkeResponseBijBestelling.value =false
+                            server_fout.value = false
+
+                        } else {
+                            Log.d("helo", "went bad + $arduino_response en test")
+                            server_fout.value = true
+                        }
+                                                                    }, 300)
+
+
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.Green
+                    )
+                ){
+                    Text("Controleer op response van server")
+                }
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
+
         if (bestelling_fout){
 
             item{
@@ -657,6 +730,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
         }
 
 
+
         item {
             androidx.compose.material3.Button(
                 onClick = {
@@ -671,7 +745,8 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                             gewensteKleur = "wit"
                         }
 
-                        plaatsBestelling(gewensteKleur,gewichtBonen, ip_adres,arduino_response,actieveBestelling,server_fout)
+                        plaatsBestelling(gewensteKleur,gewichtBonen, ip_adres,
+                            arduino_response,actieveBestelling,server_fout,kijkOfOkeResponseBijBestelling)
 
 
                     }else{
@@ -721,7 +796,8 @@ fun plaatsBestelling(
     ip_adres: String?,
     arduino_response: MutableState<String>,
     actieveBestelling: MutableState<Boolean>,
-    server_fout: MutableState<Boolean>
+    server_fout: MutableState<Boolean>,
+    kijkOfOke: MutableState<Boolean>
 ) {
 
     Log.d("debuggin","$gewensteKleur en $gewichtBonen")
@@ -729,25 +805,7 @@ fun plaatsBestelling(
 
     postRequest("$gewensteKleur+$gewichtBonen", arduino_response,ip_adres)
 
-    Handler(Looper.getMainLooper()).postDelayed({
-        //Do something after 100ms
-        getRequest(arduino_response, ip_adres)
-        Log.d("debuggin","na eerste pauze")
-    }, 2500)
-
-
-    Handler(Looper.getMainLooper()).postDelayed({
-            //Do something after 100ms
-            if (arduino_response.value.contains("ok")) {
-                Log.d("helo", "went well + $arduino_response en test +$i")
-                actieveBestelling.value = true
-                server_fout.value = false
-
-            } else {
-                Log.d("helo", "went bad + $arduino_response en test +$i")
-                server_fout.value = true
-            }
-            Log.d("debuggin", "na tweede pauze") }, 5500)
+    kijkOfOke.value = true
 
 
 }
@@ -770,10 +828,48 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                 mutableStateOf(false)
             }
 
+            var kijkOfOkeResponseBijBestelling = remember {
+                mutableStateOf(false)
+            }
             Spacer(modifier = Modifier.height(15.dp))
-            Text("Even geduld, uw bestelling wordt verwerkt...")
+            Text("Even geduld, uw bestelling wordt verwerkt...", color = Color.White)
 
             Spacer(modifier = Modifier.height(35.dp))
+
+            if (kijkOfOkeResponseBijBestelling.value){
+
+
+
+                    androidx.compose.material3.Button(
+                        onClick = {
+
+
+                            getRequest(arduino_response, ip_adres)
+
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                //Do something after 100ms
+                                if (arduino_response.value.contains("ok")) {
+                                    kijkOfOkeResponseBijBestelling.value = false
+                                    actieveBestelling.value = false
+                                } else {
+                                    fout = true
+                                }
+                            },300)
+
+
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            containerColor = Color.Green
+                        )
+                    ){
+                        Text("Controleer of server boodschap kreeg")
+                    }
+
+                Spacer(modifier = Modifier.height(35.dp))
+            }
+
             if (fout){
 
 
@@ -806,19 +902,8 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     onClick = {
                         postRequest("stop", dataState,ip_adres)
 
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            //Do something after 100ms
-                            getRequest(arduino_response, ip_adres)
-                        }, 2500)
+                        kijkOfOkeResponseBijBestelling.value = true
 
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            //Do something after 100ms
-                            if ( arduino_response.value.contains("ok")){
-                                actieveBestelling.value = false
-                            }else{
-                                fout = true
-                            }
-                        }, 5500)
 
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -834,19 +919,7 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     onClick = {
                         postRequest("comfirmed", dataState,ip_adres)
 
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            //Do something after 100ms
-                            getRequest(arduino_response, ip_adres)
-                        }, 2500) // arduino tijd geven om in te gaan op post
-
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            //Do something after 100ms
-                            if ( arduino_response.value.contains("ok") ){
-                                actieveBestelling.value = false
-                            }else{
-                                fout = true
-                            }
-                        }, 5500) // tijd geven om response te krijgen
+                        kijkOfOkeResponseBijBestelling.value = true
                     },
                     colors = ButtonDefaults.buttonColors(
 
