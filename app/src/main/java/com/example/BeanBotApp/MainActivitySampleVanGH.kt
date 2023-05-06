@@ -630,7 +630,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                         containerColor = Color.Green
                     )
                 ){
-                    Text("Controleer op response van server")
+                    Text("Controleer op response van server",color = Color.Black)
                 }
             }
             item { Spacer(modifier = Modifier.height(35.dp)) }
@@ -673,7 +673,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                         containerColor = Color.Green
                     )
                 ){
-                    Text("Controleer op response van server")
+                    Text("Controleer op response van server",color = Color.Black)
                 }
             }
             item { Spacer(modifier = Modifier.height(35.dp)) }
@@ -864,7 +864,7 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                             containerColor = Color.Green
                         )
                     ){
-                        Text("Controleer of server boodschap kreeg")
+                        Text("Controleer op antwoord van server",color = Color.Black)
                     }
 
                 Spacer(modifier = Modifier.height(35.dp))
@@ -941,7 +941,7 @@ fun BgImage2(){
             fillMaxSize()
                 .paint(
                     // Replace with your image id
-                    painterResource(id = R.drawable.boontjes),
+                    painterResource(id = R.drawable.renderfotoscherm2),
                     contentScale = ContentScale.FillHeight)
 
         })
