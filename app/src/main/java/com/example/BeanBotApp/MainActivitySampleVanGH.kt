@@ -341,6 +341,8 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
     var bestelling_fout by remember { mutableStateOf(false) }
     var server_fout = remember { mutableStateOf(false) }
     var stock_wordt_gemeten = remember { mutableStateOf(false) }
+    var stock_wordt_gevraagd = remember { mutableStateOf(false) }
+
 
     var kijkOfOkeResponseBijStockMeten = remember { mutableStateOf(false) }
     var kijkOfOkeResponseBijBestelling = remember { mutableStateOf(false) }
@@ -492,9 +494,10 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                 androidx.compose.material3.Button(
                     onClick = {
                                 postRequest("getStockVal", arduino_response,ip_adres)
+                                stock_wordt_gevraagd.value =true
 
                                 //dit is met delay toch
-
+/*
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     //Do something after 100ms
                                     getRequest(arduino_response, ip_adres)
@@ -520,6 +523,7 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
 
                                     }
                                 }, 5500)
+                                */
                               },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White,
@@ -543,6 +547,55 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                     modifier = Modifier.padding(1.dp)
                 ){
                     Text("Geen bestelling plaatsen terwijl de Bean Bot meet",color = WaarschuwingRood)}
+            }
+            item { Spacer(modifier = Modifier.height(35.dp)) }
+        }
+
+        if (stock_wordt_gevraagd.value){
+
+            item{
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.padding(1.dp)
+                ){
+                    androidx.compose.material3.Button(
+                        onClick = {
+
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                //Do something after 100ms
+                                getRequest(arduino_response, ip_adres) }, 200)
+
+                            val resp = arduino_response.value
+                            //Do something after 100ms
+                            Log.d("helo","went well + ${resp.length}")
+
+                            if (resp.length == 12){ // stock info heeft de vorm RxxxZxxxWxxx
+                                RodeBonen.value = resp.substring(1,4).toInt()
+                                ZwarteBonen.value = resp.substring(5,8).toInt()
+                                WitteBonen.value = resp.substring(9,12).toInt()
+
+                                Log.d("helo","went well")
+
+                                stock_wordt_gevraagd.value = false
+                                server_fout.value = false
+                            }else{
+
+                                Log.d("helo","went bad + $arduino_response")
+                                server_fout.value = true
+
+                            }
+
+
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            containerColor = Color.Green
+                        )
+                    ){
+                        Text("Controleer op boonwaarden van server",color = Color.Black)
+                    }
+                }
             }
             item { Spacer(modifier = Modifier.height(35.dp)) }
         }
