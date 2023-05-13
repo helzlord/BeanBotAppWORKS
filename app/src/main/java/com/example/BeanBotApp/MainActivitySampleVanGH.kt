@@ -565,11 +565,19 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                 //Do something after 100ms
                                 getRequest(arduino_response, ip_adres) }, 200)
 
+
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                //Do something after 100ms
+
+                                Log.d("debuggin","effe pauze")
+                            }, 1000)
+
+
                             val resp = arduino_response.value
                             //Do something after 100ms
                             Log.d("helo","went well + ${resp.length}")
 
-                            if (resp.length == 12){ // stock info heeft de vorm RxxxZxxxWxxx
+                            if (resp.contains("R")){ // stock info heeft de vorm RxxxZxxxWxxx
                                 RodeBonen.value = resp.substring(1,4).toInt()
                                 ZwarteBonen.value = resp.substring(5,8).toInt()
                                 WitteBonen.value = resp.substring(9,12).toInt()
@@ -580,9 +588,22 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                                 server_fout.value = false
                             }else{
 
-                                Log.d("helo","went bad + $arduino_response")
-                                server_fout.value = true
+                                // dubbelcheck
+                                if (arduino_response.value.contains("R")){ // stock info heeft de vorm RxxxZxxxWxxx
+                                    RodeBonen.value = resp.substring(1,4).toInt()
+                                    ZwarteBonen.value = resp.substring(5,8).toInt()
+                                    WitteBonen.value = resp.substring(9,12).toInt()
 
+                                    Log.d("helo","went well")
+
+                                    stock_wordt_gevraagd.value = false
+                                    server_fout.value = false
+                                }else{
+
+                                    Log.d("helo","went bad + $arduino_response")
+                                    server_fout.value = true
+
+                                }
                             }
 
 
@@ -702,6 +723,8 @@ fun BestelScherm(actieveBestelling : MutableState<Boolean>, dataState: MutableSt
                             getRequest(arduino_response, ip_adres)
                             Log.d("debuggin","na eerste pauze")
                         }, 200)
+
+
 
 
 
@@ -884,6 +907,9 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
             var kijkOfOkeResponseBijBestelling = remember {
                 mutableStateOf(false)
             }
+            var kijkOfOkeResponseBijBestellingBevestiging = remember {
+                mutableStateOf(false)
+            }
             Spacer(modifier = Modifier.height(15.dp))
             Text("Even geduld, uw bestelling wordt verwerkt...", color = Color.White)
 
@@ -919,6 +945,42 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     ){
                         Text("Controleer op antwoord van server",color = Color.Black)
                     }
+
+                Spacer(modifier = Modifier.height(35.dp))
+            }
+            if (kijkOfOkeResponseBijBestellingBevestiging.value){
+
+
+
+                androidx.compose.material3.Button(
+                    onClick = {
+
+
+                        getRequest(arduino_response, ip_adres)
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            //Do something after 100ms
+                            if (arduino_response.value.contains("gewicht")) {
+                                val gew_bonen = arduino_response.value.substringAfter("gewicht")
+                                dataState.value = "Bestelling geslaagd! Er ligt $gew_bonen g in het bakje."
+
+                                kijkOfOkeResponseBijBestelling.value = false
+                                actieveBestelling.value = false
+                            } else {
+                                fout = true
+                            }
+                        },300)
+
+
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.Green
+                    )
+                ){
+                    Text("Controleer op antwoord van server",color = Color.Black)
+                }
 
                 Spacer(modifier = Modifier.height(35.dp))
             }
@@ -972,7 +1034,7 @@ fun PendingBestellingScherm(actieveBestelling: MutableState<Boolean>,dataState: 
                     onClick = {
                         postRequest("comfirmed", dataState,ip_adres)
 
-                        kijkOfOkeResponseBijBestelling.value = true
+                        kijkOfOkeResponseBijBestellingBevestiging.value = true
                     },
                     colors = ButtonDefaults.buttonColors(
 
